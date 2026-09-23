@@ -14,12 +14,12 @@ Llene esta tabla con el nombre completo y el código de cada integrante. Es
 parte de la entrega: si falta alguno, la entrega se sanciona con el 20 % de
 la nota.
 
-| Nombre completo | Código |
-|---|---|
-| | |
-| | |
-| | |
-| | |
+| Nombre completo                    | Código  |
+|------------------------------------|---------|
+| Georsuans Sebastian Giraldo Patiño | 2611027 |
+| Dilan Yassefh Garcia Lopez         | 2669302 |
+| Juan José García Lopez             | 2669427 |
+| Cristian Daniel Martinez Patiño    | 2669052 |
 
 ## Cómo está organizado el proyecto
 

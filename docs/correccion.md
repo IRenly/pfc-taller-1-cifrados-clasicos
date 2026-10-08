@@ -190,5 +190,399 @@ Para que la función se ejecute correctamente, el mensaje debe tener la letra $e
 
 ## Punto 5: Combinaciones y Cifrado Vigenère (`combinaciones` y `vigenere`)
 
-*(A cargo del integrante del equipo responsable del Punto 5).*
+Se desea calcular la cantidad de mensajes de longitud (n) que pueden formarse con un alfabeto de (a) letras sin que existan dos letras iguales consecutivas. Además, se desea implementar el cifrado Vigenère, donde cada letra minúscula del mensaje se desplaza según la letra correspondiente de la clave.
 
+Código analizado
+def combinaciones(n: Int, a: Int): BigInt = {
+if (n == 0) {
+BigInt(1)
+} else if (n == 1) {
+BigInt(a)
+} else {
+BigInt(a - 1) * combinaciones(n - 1, a)
+}
+}
+
+def vigenere(m: Mensaje, clave: Clave): Mensaje = {
+
+if (clave.isEmpty) {
+m
+} else {
+
+    def cifrar(
+        mensaje: List[Char],
+        posicionClave: Int
+    ): String = {
+
+      mensaje match {
+
+        case Nil =>
+          ""
+
+        case c :: resto =>
+
+          if (c >= 'a' && c <= 'z') {
+
+            val k = clave(posicionClave % clave.length)
+
+            val desplazamiento = k - 'a'
+            val posicion = (c - 'a' + desplazamiento) % 26
+            val nuevaLetra = ('a' + posicion).toChar
+
+            s"$nuevaLetra${cifrar(resto, posicionClave + 1)}"
+
+          } else {
+
+            s"$c${cifrar(resto, posicionClave)}
+          }
+        }
+      }
+
+      cifrar(m.toList, 0)
+    }
+}
+}
+Especificación de combinaciones
+
+Sea (C(n,a)) la cantidad de mensajes de longitud (n) que se pueden formar utilizando un alfabeto de (a) letras sin tener dos letras iguales consecutivas.
+
+La función debe cumplir:
+
+$$
+C(n,a)=
+\begin{cases}
+1 & \text{si } n=0\
+a & \text{si } n=1\
+(a-1)C(n-1,a) & \text{si } n>1
+\end{cases}
+$$
+
+Demostración de combinaciones
+
+1. Caso base: (n=0)
+
+Cuando la longitud del mensaje es cero solamente existe un mensaje posible: el mensaje vacío.
+
+El código realiza:
+
+if (n == 0) {
+BigInt(1)
+}
+
+Por lo tanto:
+
+$$
+C(0,a)=1
+$$
+
+que coincide con la especificación.
+
+2. Caso base: (n=1)
+
+Cuando el mensaje tiene una sola letra, cualquiera de las (a) letras del alfabeto puede ser utilizada.
+
+El código realiza:
+
+else if (n == 1) {
+BigInt(a)
+}
+
+Por lo tanto:
+
+$$
+C(1,a)=a
+$$
+
+que también coincide con la especificación.
+
+3. Hipótesis de inducción
+
+Suponemos que para una longitud (n-1), la función calcula correctamente la cantidad de mensajes:
+
+$$
+C(n-1,a)
+$$
+
+4. Paso inductivo
+
+Para formar un mensaje de longitud (n), primero se puede escoger cualquiera de los mensajes válidos de longitud (n-1).
+
+Por hipótesis de inducción existen:
+
+$$
+C(n-1,a)
+$$
+
+posibilidades.
+
+Una vez escogido el mensaje anterior, la nueva letra no puede ser igual a la última letra utilizada. Como existen (a) letras disponibles y una de ellas no puede utilizarse, quedan:
+
+$$
+a-1
+$$
+
+posibilidades.
+
+Por lo tanto:
+
+$$
+C(n,a)=(a-1)C(n-1,a)
+$$
+
+Esto es exactamente lo que realiza la función:
+
+BigInt(a - 1) * combinaciones(n - 1, a)
+
+Por lo tanto, por inducción sobre (n), la función combinaciones calcula correctamente la cantidad de mensajes de longitud (n) sin dos letras iguales consecutivas.
+
+Encadenamiento de llamadas de combinaciones
+
+Por ejemplo, para:
+
+combinaciones(3, 26)
+
+la función realiza las siguientes llamadas:
+
+$$
+C(3,26)
+$$
+
+$$
+=25C(2,26)
+$$
+
+$$
+=25(25C(1,26))
+$$
+
+$$
+=25(25(26))
+$$
+
+$$
+=16250
+$$
+
+La última llamada llega al caso base (C(1,26)=26). Después, las llamadas anteriores multiplican ese resultado por (25).
+
+Especificación de vigenere
+
+Sea:
+
+$$
+m=c_1c_2\ldots c_n
+$$
+
+un mensaje y sea (k) la clave utilizada para cifrarlo.
+
+Para cada letra minúscula del mensaje se utiliza una letra de la clave. El desplazamiento corresponde a la posición de la letra de la clave dentro del alfabeto.
+
+El nuevo carácter se calcula mediante:
+
+$$
+c'=(c+k)\bmod 26
+$$
+
+La clave se repite cuando se alcanza su final.
+
+Los caracteres que no son letras minúsculas se copian sin modificaciones y no consumen una posición de la clave.
+
+Caso base: clave vacía
+
+Antes de comenzar el proceso se verifica:
+
+if (clave.isEmpty) {
+m
+}
+
+Si la clave está vacía no existe ningún desplazamiento que aplicar. Por lo tanto, el mensaje debe permanecer sin cambios:
+
+$$
+V(m,"")=m
+$$
+
+Esto coincide con la especificación.
+
+Caso base: mensaje vacío
+
+La función auxiliar cifrar procesa el mensaje mediante recursión sobre una lista de caracteres.
+
+Cuando no quedan caracteres:
+
+case Nil =>
+""
+
+Por lo tanto:
+
+$$
+V("",clave)=""
+$$
+
+Esto es correcto porque no existen caracteres pendientes de cifrar.
+
+Hipótesis de inducción
+
+Suponemos que la función auxiliar cifra correctamente el resto del mensaje, utilizando la posición correspondiente de la clave.
+
+Sea:
+
+$$
+m=c::resto
+$$
+
+y supongamos que cifrar(resto, posicionClave) produce correctamente el cifrado del resto del mensaje.
+
+Paso inductivo: carácter minúsculo
+
+Si el carácter actual es una letra minúscula, el código obtiene la letra correspondiente de la clave:
+
+val k = clave(posicionClave % clave.length)
+
+El operador módulo permite repetir la clave cuando se llega a su final.
+
+Después se calcula:
+
+val desplazamiento = k - 'a'
+val posicion = (c - 'a' + desplazamiento) % 26
+val nuevaLetra = ('a' + posicion).toChar
+
+Esto corresponde matemáticamente a:
+
+$$
+c'=(c+k)\bmod26
+$$
+
+Por lo tanto, el carácter actual se cifra correctamente.
+
+Luego se realiza la llamada recursiva:
+
+cifrar(resto, posicionClave + 1)
+
+La posición de la clave aumenta en uno porque el carácter actual es una letra minúscula y, por lo tanto, consume una posición de la clave.
+
+Por la hipótesis de inducción, el resto del mensaje también será cifrado correctamente.
+
+Finalmente, se concatena la letra cifrada con el resultado de la llamada recursiva:
+
+s"$nuevaLetra${cifrar(resto, posicionClave + 1)}"
+
+Por lo tanto, se obtiene correctamente el mensaje cifrado.
+
+Paso inductivo: carácter que no es letra minúscula
+
+Si el carácter actual no es una letra minúscula, la función no realiza ningún desplazamiento.
+
+En este caso se ejecuta:
+
+s"$c${cifrar(resto, posicionClave)}"
+
+El carácter se copia directamente al resultado y la posición de la clave permanece igual.
+
+Esto es necesario porque los espacios y demás caracteres que no son letras minúsculas no deben consumir una posición de la clave.
+
+Por lo tanto, si tenemos:
+
+hola mundo
+
+el espacio entre hola y mundo no hace avanzar la clave.
+
+Repetición de la clave
+
+La repetición de la clave se consigue mediante:
+
+clave(posicionClave % clave.length)
+
+Por ejemplo, si la clave es:
+
+sol
+
+sus posiciones son:
+
+$$
+0,1,2
+$$
+
+Cuando se llega nuevamente a la posición (3):
+
+$$
+3\bmod3=0
+$$
+
+por lo que se vuelve a utilizar la primera letra de la clave.
+
+Así, la secuencia de posiciones utilizadas es:
+
+$$
+0,1,2,0,1,2,0,1,2,\ldots
+$$
+
+Por lo tanto, la clave puede repetirse durante todo el mensaje.
+
+Encadenamiento de llamadas de vigenere
+
+Para el ejemplo:
+
+vigenere("abc", "bc")
+
+la primera llamada comienza con:
+
+cifrar("abc", 0)
+
+La letra a utiliza la letra b de la clave. Después se realiza:
+
+cifrar("bc", 1)
+
+La letra b utiliza la letra c de la clave. Después se realiza:
+
+cifrar("c", 2)
+
+Como la clave tiene longitud (2), la posición utilizada es:
+
+$$
+2\bmod2=0
+$$
+
+por lo que nuevamente se utiliza la primera letra de la clave, b.
+
+Finalmente se realiza:
+
+cifrar("", 1)
+
+que devuelve:
+
+""
+
+Las llamadas pendientes concatenan sus resultados hasta obtener el mensaje cifrado.
+
+Ejemplo con un espacio
+
+Para:
+
+vigenere("hola mundo", "ab")
+
+la clave se utiliza de la siguiente manera:
+
+Mensaje: h o l a   m u n d o
+Clave:   a b a b   a b a b a
+
+El espacio no consume una posición de la clave. Por eso, la letra m vuelve a utilizar la letra a.
+
+El resultado obtenido es:
+
+hplb mvneo
+
+que coincide con el resultado esperado.
+
+Conclusión
+
+La función combinaciones es correcta porque cumple los dos casos base establecidos y aplica correctamente la recurrencia:
+
+$$
+C(n,a)=(a-1)C(n-1,a)
+$$
+
+para todo (n>1).
+
+Por otra parte, vigenere procesa recursivamente cada carácter del mensaje, aplica el desplazamiento correspondiente de la clave mediante módulo (26), repite la clave cuando es necesario y conserva los caracteres que no son letras minúsculas sin consumir una posición de la clave.
+
+Por lo tanto, las funciones combinaciones y vigenere cumplen con la especificación establecida para el Punto 5.

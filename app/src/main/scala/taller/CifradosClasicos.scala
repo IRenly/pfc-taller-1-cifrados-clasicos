@@ -84,7 +84,7 @@ class CifradosClasicos {
     def getFrequentChar(frec: Frecuencias): Char = 
     frec match {
       case Nil => '0'
-      case x :: xs => if(x._1 == 'e') getFrequentChar(xs) else x._1
+      case x :: xs => val (letra,cant) = x ; if(letra == 'e') getFrequentChar(xs) else letra
     }
 
     val frequentChar = getFrequentChar(frecuencias(m))

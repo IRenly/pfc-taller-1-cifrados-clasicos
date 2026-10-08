@@ -29,13 +29,22 @@ app/src/main/scala/taller/
     App.scala                 programa de arranque
 
 app/src/test/scala/taller/
-    CifradosClasicosTest.scala   las 36 pruebas, que no se modifican
+    CifradosClasicosTest.scala   las 36 pruebas dadas, que no se modifican
 
 docs/                         los informes, en Markdown
 ```
 
-Su código va en `main`. Las pruebas viven aparte y usted no las toca. Los
-informes de proceso y de corrección que pide el enunciado van en `docs/`,
+Su código va en `main`. Las 36 pruebas que vienen escritas no se modifican:
+son el contrato con que se califica.
+
+La rúbrica pide además **cinco casos de prueba propios por cada punto**,
+distintos de los ejemplos del enunciado y de los que trae el material. Esos
+van donde le resulte más cómodo: al final de `CifradosClasicosTest.scala`,
+debajo de las que ya están, o en un archivo nuevo dentro de
+`app/src/test/scala/taller/`. Las dos formas valen; lo que no se toca es lo
+que ya estaba escrito.
+
+Los informes de proceso y de corrección que pide el enunciado van en `docs/`,
 en Markdown, con la notación matemática en LaTeX y los diagramas en
 `mermaid`; no se aceptan imágenes insertadas ni archivos por fuera de esa
 carpeta.

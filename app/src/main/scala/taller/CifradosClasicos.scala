@@ -61,7 +61,18 @@ class CifradosClasicos {
    * Cuenta las letras minúsculas del mensaje, de mayor a menor frecuencia y,
    * en empate, en orden alfabético. El recorrido es recursivo de cola.
    */
-  def frecuencias(m: Mensaje): Frecuencias = ???
+  def frecuencias(m: Mensaje): Frecuencias ={
+
+    @tailrec
+    def contar(resto: List[Char], acc: Map[Char, Int]): Map[Char, Int] =
+      resto match {
+        case Nil => acc
+        case c :: cola if esMinuscula(c) =>
+          contar(cola, acc.updated(c, acc.getOrElse(c, 0)+1))
+        case _ :: cola => contar(cola, acc)
+      }
+    contar(m.toList, Map()).toList.sortBy {case (c, n) => (-n, c)}
+  }
 
   // Punto 4 -------------------------------------------------------------------
 
@@ -73,7 +84,7 @@ class CifradosClasicos {
     def getFrequentChar(frec: Frecuencias): Char = 
     frec match {
       case Nil => '0'
-      case x :: xs => if(x._1 == 'e') getFrequentChar(xs) else x._1
+      case x :: xs => val (letra,cant) = x ; if(letra == 'e') getFrequentChar(xs) else letra
     }
 
     val frequentChar = getFrequentChar(frecuencias(m))

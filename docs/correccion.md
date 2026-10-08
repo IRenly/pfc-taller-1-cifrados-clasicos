@@ -44,7 +44,68 @@ $$acc + \text{cifrar}(m, k) == \text{cifrar}(m_0, k)$$
 
 ## Punto 3: Frecuencias (`frecuencias`)
 
-*(A cargo del integrante del equipo responsable del Punto 3).*
+```scala
+def frecuencias(m: Mensaje): Frecuencias = {
+
+  @tailrec
+  def contar(resto: List[Char], acc: Map[Char, Int]): Map[Char, Int] =
+    resto match {
+      case Nil => acc
+      case c :: cola if esMinuscula(c) =>
+        contar(cola, acc.updated(c, acc.getOrElse(c, 0) + 1))
+      case _ :: cola => contar(cola, acc)
+    }
+
+  contar(m.toList, Map()).toList.sortBy { case (c, n) => (-n, c) }
+}
+```
+### Especificación
+
+Sea $m = c_1 c_2 \ldots c_n$ un mensaje. Sea $\text{cuenta}(\ell, x)$ el número
+de veces que aparece la letra $\ell$ en la secuencia $x$. La función debe
+devolver las parejas $(\ell, \text{cuenta}(\ell, m))$ de las letras minúsculas
+con cuenta mayor que cero, ordenadas de mayor a menor frecuencia y, en empate,
+alfabéticamente.
+
+### Proceso iterativo de `contar`
+
+- Un estado $s = (resto, acc)$, donde $resto$ es la lista de caracteres por
+  revisar y $acc$ es el mapa de conteos.
+- El estado inicial es $s_0 = (m.\text{toList}, \text{Map}())$.
+- Un estado es final si $resto = \text{Nil}$.
+- La invariante es
+  $\text{Inv}(resto, acc) \equiv resto = \text{List}(c_i, \ldots, c_n) \land$
+  $acc$ contiene, para cada minúscula $\ell$ que aparece en $c_1 \ldots c_{i-1}$,
+  el valor $\text{cuenta}(\ell, c_1 \ldots c_{i-1})$, y ninguna otra entrada.
+- $\text{transformar}((c_i :: cola, acc))$ es $(cola, acc')$, donde
+  $acc' = acc.\text{updated}(c_i, acc(c_i) + 1)$ si $c_i$ es minúscula
+  (con $acc(c_i) = 0$ si no estaba), y $acc' = acc$ si no lo es.
+
+### Demostración
+
+**1.** $\text{Inv}(s_0)$: en $s_0$, $resto = \text{List}(c_1, \ldots, c_n)$ y
+$acc$ está vacío, que es el conteo de la secuencia vacía ($i = 1$).
+
+**2.** La invariante se mantiene. Si $\text{Inv}(s_i)$ y $resto \neq \text{Nil}$:
+
+- Si $c_i$ es minúscula, su conteo sube en 1, así que $acc'$ es el conteo de
+  $c_1 \ldots c_i$.
+- Si no lo es, el conteo de $c_1 \ldots c_i$ es el mismo que el de
+  $c_1 \ldots c_{i-1}$, y $acc' = acc$.
+- En ambos casos $cola = \text{List}(c_{i+1}, \ldots, c_n)$.
+
+**3.** En el estado final, $resto = \text{Nil}$, o sea $i = n + 1$. Por la
+invariante, $acc$ tiene $\text{cuenta}(\ell, m)$ para cada minúscula de $m$.
+
+**4.** Terminación: en cada paso $resto$ pierde un elemento, así que después de
+$n$ pasos queda vacío.
+
+### Orden final
+
+`sortBy` con la clave $(-n, \ell)$ ordena las parejas de mayor a menor $n$ y, si
+hay empate, por letra. Como cada letra aparece una sola vez en el mapa, dos
+parejas nunca tienen la misma clave. Por eso el orden es único y coincide con
+el que pide el enunciado.
 
 ---
 

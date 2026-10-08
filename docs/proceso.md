@@ -56,22 +56,13 @@ Para el mensaje `"casa"` con clave $k = 3$:
 
 ### 2.1. Crecimiento de la Pila (Apilado de Llamadas)
 
-Capturas del depurador mostrando los marcos acumulados (*frames*) y la reducción de $m$:
+En cada llamada recursiva se apila un nuevo marco de ejecución (*frame*) en la memoria, dejando la concatenación pendiente mientras el mensaje se reduce:
 
-1. **Llamada 1:** `cesar("casa", 3)` $\to$ Cifra `'c'` a `'f'`. Queda pendiente `'f' +: cesar("asa", 3)` (1 marco).  
-   ![Llamada 1](img.png)
-
-2. **Llamada 2:** `cesar("asa", 3)` $\to$ Cifra `'a'` a `'d'`. Queda pendiente `'d' +: cesar("sa", 3)` (2 marcos).  
-   ![Llamada 2](img_1.png)
-
-3. **Llamada 3:** `cesar("sa", 3)` $\to$ Cifra `'s'` a `'v'`. Queda pendiente `'v' +: cesar("a", 3)` (3 marcos).  
-   ![Llamada 3](img_2.png)
-
-4. **Llamada 4:** `cesar("a", 3)` $\to$ Cifra `'a'` a `'d'`. Queda pendiente `'d' +: cesar("", 3)` (4 marcos).  
-   ![Llamada 4](img_3.png)
-
-5. **Caso base:** `cesar("", 3)` $\to$ Condición `m.isEmpty` es `true`, retorna `""` (máximo de 5 marcos).  
-   > **Nota sobre el Caso Base:** En el depurador no se genera una quinta pausa porque el *breakpoint* está en la línea del `else`. Al llegar `m = ""`, entra directo al bloque `if` y retorna `""` sin volver a pausar, iniciando el retorno de la pila.
+1. **Llamada 1:** `cesar("casa", 3)` $\to$ Cifra `'c'` a `'f'`. Queda pendiente: `'f' +: cesar("asa", 3)` (1 marco).
+2. **Llamada 2:** `cesar("asa", 3)` $\to$ Cifra `'a'` a `'d'`. Queda pendiente: `'d' +: cesar("sa", 3)` (2 marcos).
+3. **Llamada 3:** `cesar("sa", 3)` $\to$ Cifra `'s'` a `'v'`. Queda pendiente: `'v' +: cesar("a", 3)` (3 marcos).
+4. **Llamada 4:** `cesar("a", 3)` $\to$ Cifra `'a'` a `'d'`. Queda pendiente: `'d' +: cesar("", 3)` (4 marcos).
+5. **Caso base:** `cesar("", 3)` $\to$ Condición `m.isEmpty` es `true`, retorna `""` (profundidad máxima de 5 marcos).
 
 ### 2.2. Reducción de la Pila (Resolución de Pendientes)
 
